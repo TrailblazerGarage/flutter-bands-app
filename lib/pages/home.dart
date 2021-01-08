@@ -14,12 +14,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  List<Band> bands = [
-    Band(id: '1', name: 'Metallica', votes: 2),
-    Band(id: '2', name: 'Queen', votes: 3),
-    Band(id: '3', name: 'Héroes del Silencio', votes: 1),
-    Band(id: '4', name: 'Bon Jovi', votes: 2),
-  ];
+  List<Band> bands = [];
+
+  @override
+  void initState(){
+    final socketService = Provider.of<SocketService>(context, listen: false);
+    socketService.socket.on('active-bands', (payload){
+      this.bands = (payload as List)
+                  .map( (band) => Band.fromMap(band))
+                  .toList();
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // To avoid listen to instructions when is not needed anymore.
+    final socketService = Provider.of<SocketService>(context, listen: false);
+    socketService.socket.off('active-bands');
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +67,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _bandTile(Band band) {
+
+    final socketService = Provider.of<SocketService>(context, listen: false);
+
     return Dismissible(
         key: Key(band.id),
         direction: DismissDirection.startToEnd,
@@ -76,7 +94,7 @@ class _HomePageState extends State<HomePage> {
             title: Text( band.name ),
             trailing: Text('${ band.votes }', style: TextStyle( fontSize: 20)),
             onTap: () {
-              print(band.name);
+              socketService.socket.emit('vote-band', { 'id': band.id });
             }
         ),
     );
