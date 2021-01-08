@@ -10,6 +10,8 @@ enum ServerStatus {
 
 class SocketService with ChangeNotifier{
   ServerStatus _serverStatus = ServerStatus.Connecting;
+
+  get serverStatus => this._serverStatus;
   IO.Socket _socket;
 
   SocketService(){
@@ -17,15 +19,21 @@ class SocketService with ChangeNotifier{
   }
 
   void _initConfig() {
-   this._socket = IO.io("http://192.168.1.104:3000", <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': true,
-    });
+    //192.168.1.104
+     this._socket = IO.io("http://192.168.1.104:3000/", <String, dynamic>{
+        'transports': ['websocket'],
+        'autoConnect': true
+      });
 
     this._socket.on('connect', (_) {
       print('connect');
+      this._serverStatus = ServerStatus.Online;
+      notifyListeners();
     });
 
-    this._socket.onDisconnect((_) => print('disconnect'));
+    this._socket.on('disconnect',(_) {
+      this._serverStatus = ServerStatus.Offline;
+      notifyListeners();
+    });
   }
 }
