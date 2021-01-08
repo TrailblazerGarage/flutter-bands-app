@@ -73,10 +73,8 @@ class _HomePageState extends State<HomePage> {
     return Dismissible(
         key: Key(band.id),
         direction: DismissDirection.startToEnd,
-        onDismissed: (direction){
-          print('direction: $direction');
-          print('id: ${band.id}');
-          // TODO call delete operation on server
+        onDismissed: (_){
+          socketService.emit('delete-band', { 'id': band.id });
         },
         background: Container(
           padding: EdgeInsets.only(left: 8.0),
@@ -151,12 +149,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void addBandToList( String name ) {
+  void addBandToList( String name) {
     if (name.length > 1) {
-      this.bands.add( new Band(id: DateTime.now().toString(), name: name, votes: 0));
-      setState(() {});
+      final socketService = Provider.of<SocketService>(context, listen: false);
+      socketService.emit('add-band', { 'name': name });
     }
-
     Navigator.pop(context);
   }
 }
