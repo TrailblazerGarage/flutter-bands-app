@@ -14,6 +14,7 @@ class SocketService with ChangeNotifier{
 
   ServerStatus get serverStatus => this._serverStatus;
   IO.Socket get socket => this._socket;
+  Function get emit => this._socket.emit;
 
   SocketService(){
     this._initConfig();
@@ -35,7 +36,5 @@ class SocketService with ChangeNotifier{
       this._serverStatus = ServerStatus.Offline;
       notifyListeners();
     });
-
-
   }
 }
