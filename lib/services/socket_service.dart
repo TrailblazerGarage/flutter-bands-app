@@ -21,7 +21,7 @@ class SocketService with ChangeNotifier{
   }
 
   void _initConfig() {
-     this._socket = IO.io("http://192.168.1.104:3000/", <String, dynamic>{
+     this._socket = IO.io("https://pure-depths-97862.herokuapp.com/", <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': true
       });

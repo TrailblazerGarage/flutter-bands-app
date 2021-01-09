@@ -61,7 +61,8 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: <Widget>[
 
-            _showGraph(),
+            if(bands.length > 0)
+              _showGraph(),
 
             Expanded(child: ListView.builder(
                 itemCount: bands.length,
